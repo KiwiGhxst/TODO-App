@@ -35,22 +35,29 @@ export default class Task extends Component {
       this.setState({ editStatus: false });
     }
   };
+  checkboxHandler = (e) => {
+    this.setState({
+      checked: e.target.checked,
+    });
+  };
 
   render() {
-    const { id, visible, created, onDeleted, onToggleDone, done } = this.props;
+    const { id, created, onDeleted, onToggleDone, done } = this.props;
     let classNames = 'view';
     if (done) {
       classNames += ' completed';
     }
 
-    if (!visible) {
-      classNames += ' display-none';
-    }
-
     return (
       <li key={id} className={classNames}>
         <div className="view">
-          <input className="toggle" type="checkbox" onClick={onToggleDone} />
+          <input
+            className="toggle"
+            type="checkbox"
+            onClick={onToggleDone}
+            checked={done}
+            onChange={this.checkboxHandler}
+          />
           <label>
             {this.state.editStatus ? (
               <input
@@ -61,7 +68,9 @@ export default class Task extends Component {
                 value={this.state.description}
               ></input>
             ) : (
-              <span className="description">{this.state.description}</span>
+              <span className="description" onClick={onToggleDone}>
+                {this.state.description}
+              </span>
             )}
             <span className="created">{formatDistanceToNow(created)}</span>
           </label>

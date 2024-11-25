@@ -29,9 +29,9 @@ export default class NewTaskForm extends Component {
             type="text"
             className="new-todo"
             placeholder="What needs to be done?"
-            /*autoFocus*/
             onChange={this.onLabelChange}
             value={this.state.label}
+            required
           />
         </form>
       </header>

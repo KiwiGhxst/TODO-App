@@ -15,7 +15,7 @@ export default class App extends Component {
       this.createTodoItem('Second Task'),
       this.createTodoItem('First Task'),
     ],
-    filter: ['all'],
+    filter: 'all',
   };
 
   createTodoItem(text) {
@@ -24,20 +24,17 @@ export default class App extends Component {
       created: new Date(),
       done: false,
       id: this.maxId++,
-      visible: true,
     };
   }
 
   addItem = (text) => {
-    if (text.length > 0 && this.state.filter[0] !== 'done') {
-      const newItem = this.createTodoItem(text);
-      this.setState(({ todoData }) => {
-        const newArray = [newItem, ...todoData];
-        return {
-          todoData: newArray,
-        };
-      });
-    }
+    const newItem = this.createTodoItem(text);
+    this.setState(({ todoData }) => {
+      const newArray = [newItem, ...todoData];
+      return {
+        todoData: newArray,
+      };
+    });
   };
 
   deleteItem = (id) => {
@@ -62,11 +59,6 @@ export default class App extends Component {
         todoData: this.toggleProperty(todoData, id, 'done'),
       };
     });
-    if (this.state.filter[0] === 'active') {
-      this.showActive();
-    } else if (this.state.filter[0] === 'done') {
-      this.showDone();
-    }
   };
 
   deleteCompletedItems = () => {
@@ -84,64 +76,39 @@ export default class App extends Component {
   };
 
   showDone = () => {
-    this.setState(({ todoData, filter }) => {
-      let newArr = [...todoData];
-      newArr.forEach((item) => {
-        item.done ? (item.visible = true) : (item.visible = false);
-      });
-
-      let newFilter = [...filter];
-      newFilter[0] = 'done';
-
-      return {
-        todoData: newArr,
-        filter: newFilter,
-      };
+    this.setState(() => {
+      return { filter: 'done' };
     });
   };
 
   showActive = () => {
-    this.setState(({ todoData, filter }) => {
-      let newArr = [...todoData];
-      newArr.forEach((item) => {
-        !item.done ? (item.visible = true) : (item.visible = false);
-      });
-
-      let newFilter = [...filter];
-      newFilter[0] = 'active';
-
-      return {
-        todoData: newArr,
-        filter: newFilter,
-      };
+    this.setState(() => {
+      return { filter: 'active' };
     });
   };
 
   showAll = () => {
-    this.setState(({ todoData, filter }) => {
-      let newArr = [...todoData];
-      newArr.forEach((item) => {
-        item.visible = true;
-      });
-
-      let newFilter = [...filter];
-      newFilter[0] = 'all';
-
-      return {
-        todoData: newArr,
-        filter: newFilter,
-      };
+    this.setState(() => {
+      return { filter: 'all' };
     });
   };
 
   render() {
-    const { todoData } = this.state;
-    const todoCount = todoData.length - todoData.filter((el) => el.done).length;
+    const { todoData, filter } = this.state;
+    const todoCount = todoData.filter((el) => !el.done).length;
+
+    const filtering = () => {
+      if (filter === 'done') {
+        return [...todoData].filter((el) => el.done);
+      } else if (filter === 'active') {
+        return [...todoData].filter((el) => !el.done);
+      } else return todoData;
+    };
 
     return (
       <div>
         <NewTaskForm onItemAdded={this.addItem} />
-        <TaskList todos={this.state.todoData} onDeleted={this.deleteItem} onToggleDone={this.onToggleDone} />
+        <TaskList todos={filtering()} onDeleted={this.deleteItem} onToggleDone={this.onToggleDone} />
         <Footer
           showActive={this.showActive}
           showDone={this.showDone}

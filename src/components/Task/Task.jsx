@@ -42,14 +42,14 @@ export default class Task extends Component {
   };
 
   render() {
-    const { id, created, onDeleted, onToggleDone, done } = this.props;
+    const { created, onDeleted, onToggleDone, done } = this.props;
     let classNames = 'view';
     if (done) {
       classNames += ' completed';
     }
 
     return (
-      <li key={id} className={classNames}>
+      <li className={classNames}>
         <div className="view">
           <input
             className="toggle"
